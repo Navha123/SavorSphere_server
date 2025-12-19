@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+const path = require("path");
 
 dotenv.config();
 connectDB();
@@ -12,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// API Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/recipes', require('./routes/recipeRoutes'));
@@ -24,8 +25,11 @@ app.use('/api/bookmarks', require('./routes/bookmarkRoutes'));
 app.use('/api/meal-plans', require('./routes/mealPlanRoutes'));
 app.use('/api/shopping-lists', require('./routes/shoppingListRoutes'));
 
-app.get('/', (req, res) => {
-  res.json({ message: 'SavorSphere API is running!' });
+// Serve React build
+app.use(express.static(path.join(__dirname, "build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
